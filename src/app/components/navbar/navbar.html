@@ -1,1 +1,42 @@
-<p>navbar works!</p>
+<mat-toolbar color="primary" class="navbar">
+  <!-- Logo / App Name -->
+  <span class="app-title" routerLink="/dashboard">
+    <mat-icon>account_balance_wallet</mat-icon>
+    ExpenseTracker
+  </span>
+
+  <span class="spacer"></span>
+
+  <!-- Desktop Nav Links -->
+  <nav class="nav-links">
+    @for (link of navLinks; track link.path) {
+      <a mat-button [routerLink]="link.path" routerLinkActive="active-link">
+        <mat-icon>{{ link.icon }}</mat-icon>
+        {{ link.label }}
+      </a>
+    }
+  </nav>
+
+  <span class="spacer"></span>
+
+  <!-- User Menu -->
+  @if (authService.currentUser()) {
+    <button mat-button [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+      {{ authService.currentUser()?.displayName }}
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/profile">
+        <mat-icon>person</mat-icon>
+        Profile
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Sign Out
+      </button>
+    </mat-menu>
+  }
+</mat-toolbar>

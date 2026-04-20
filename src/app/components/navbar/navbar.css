@@ -1,0 +1,48 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.app-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+
+  mat-icon {
+    font-size: 26px;
+  }
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.active-link {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 4px;
+}

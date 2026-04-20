@@ -1,1 +1,78 @@
-<p>transaction-list works!</p>
+<div class="page-header">
+  <h1>Transactions</h1>
+  <button mat-raised-button color="primary" (click)="openAddDialog()">
+    <mat-icon>add</mat-icon> Add Transaction
+  </button>
+</div>
+
+<mat-card>
+  <mat-card-content>
+    @if (transactions().length === 0) {
+      <div class="empty-state">
+        <mat-icon>receipt_long</mat-icon>
+        <p>No transactions yet. Add your first one!</p>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="transactions()" class="full-width">
+        <!-- Date -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let t">
+            {{ t.date?.toDate ? t.date.toDate() : (t.date | date: 'MMM d, y') }}
+          </td>
+        </ng-container>
+
+        <!-- Category -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Category</th>
+          <td mat-cell *matCellDef="let t">{{ t.category }}</td>
+        </ng-container>
+
+        <!-- Notes -->
+        <ng-container matColumnDef="notes">
+          <th mat-header-cell *matHeaderCellDef>Notes</th>
+          <td mat-cell *matCellDef="let t">{{ t.notes || '—' }}</td>
+        </ng-container>
+
+        <!-- Type -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let t">
+            <mat-chip [color]="t.type === 'income' ? 'primary' : 'warn'" highlighted>
+              {{ t.type ? (t.type.charAt(0).toUpperCase() + t.type.slice(1)) : '' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Amount -->
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td
+            mat-cell
+            *matCellDef="let t"
+            [class.income]="t.type === 'income'"
+            [class.expense]="t.type === 'expense'"
+          >
+            {{ t.type === 'income' ? '+' : '-' }}{{ t.amount | currency }}
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let t">
+            <button mat-icon-button matTooltip="Edit" (click)="openEditDialog(t)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" matTooltip="Delete" (click)="confirmDelete(t)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    }
+  </mat-card-content>
+</mat-card>

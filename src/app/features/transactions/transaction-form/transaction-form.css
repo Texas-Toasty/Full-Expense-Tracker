@@ -1,0 +1,26 @@
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+mat-dialog-content {
+  min-width: 380px;
+  padding-top: 16px !important;
+}
+
+.type-toggle {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+
+  mat-radio-button {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 8px;
+}

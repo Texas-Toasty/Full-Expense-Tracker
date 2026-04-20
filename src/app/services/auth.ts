@@ -45,4 +45,17 @@ export class AuthService {
     this.currentUser.set(null);
     this.router.navigate(['/login']);
   }
+
+  constructor() {
+    user(this.auth).subscribe(async (firebaseUser) => {
+      if (firebaseUser) {
+        const snap = await getDoc(doc(this.firestore, 'users', firebaseUser.uid));
+        if (snap.exists()) {
+          this.currentUser.set(snap.data() as UserProfile);
+        }
+      } else {
+        this.currentUser.set(null);
+      }
+    });
+  }
 }

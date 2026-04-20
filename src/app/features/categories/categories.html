@@ -1,1 +1,131 @@
-<p>categories works!</p>
+<div class="page-header">
+  <h1>Categories</h1>
+  <button mat-raised-button color="primary" (click)="showForm = !showForm">
+    <mat-icon>{{ showForm ? 'close' : 'add' }}</mat-icon>
+    {{ showForm ? 'Cancel' : 'New Category' }}
+  </button>
+</div>
+
+<!-- Add Category Form -->
+@if (showForm) {
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Create Custom Category</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Category Name</mat-label>
+          <input matInput formControlName="name" placeholder="e.g. Subscriptions" />
+          @if (form.get('name')?.hasError('required')) {
+            <mat-error>Name is required</mat-error>
+          }
+          @if (form.get('name')?.hasError('minlength')) {
+            <mat-error>Name must be at least 2 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Icon Picker -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Icon</mat-label>
+          <mat-select formControlName="icon">
+            @for (icon of availableIcons; track icon) {
+              <mat-option [value]="icon">
+                <mat-icon>{{ icon }}</mat-icon>
+                {{ icon }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Color Picker -->
+        <div class="color-picker">
+          <label>Color</label>
+          <div class="color-swatches">
+            @for (color of availableColors; track color) {
+              <button
+                type="button"
+                class="swatch"
+                [style.background]="color"
+                [class.selected]="form.get('color')?.value === color"
+                (click)="form.get('color')?.setValue(color)"
+                [matTooltip]="color"
+              ></button>
+            }
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview">
+          <span>Preview:</span>
+          <div
+            class="category-chip"
+            [style.background]="form.get('color')?.value + '22'"
+            [style.border-color]="form.get('color')?.value"
+          >
+            <mat-icon [style.color]="form.get('color')?.value">
+              {{ form.get('icon')?.value }}
+            </mat-icon>
+            <span>{{ form.get('name')?.value || 'Category Name' }}</span>
+          </div>
+        </div>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="form.invalid || loading"
+        >
+          Add Category
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
+
+<!-- Predefined Categories -->
+<h2 class="section-title">Default Categories</h2>
+<div class="category-grid">
+  @for (cat of predefinedCategories; track cat.name) {
+    <mat-card class="category-card">
+      <div class="category-icon" [style.background]="cat.color + '22'">
+        <mat-icon [style.color]="cat.color">{{ cat.icon }}</mat-icon>
+      </div>
+      <span class="category-name">{{ cat.name }}</span>
+      <span class="badge">Default</span>
+    </mat-card>
+  }
+</div>
+
+<!-- Custom Categories -->
+<h2 class="section-title">
+  My Categories
+  <span class="count">({{ customCategories().length }})</span>
+</h2>
+
+@if (customCategories().length === 0) {
+  <mat-card class="empty-state">
+    <mat-icon>category</mat-icon>
+    <p>No custom categories yet. Create one above!</p>
+  </mat-card>
+} @else {
+  <div class="category-grid">
+    @for (cat of customCategories(); track cat.id) {
+      <mat-card class="category-card">
+        <div class="category-icon" [style.background]="cat.color + '22'">
+          <mat-icon [style.color]="cat.color">{{ cat.icon }}</mat-icon>
+        </div>
+        <span class="category-name">{{ cat.name }}</span>
+        <button
+          mat-icon-button
+          color="warn"
+          class="delete-btn"
+          matTooltip="Delete category"
+          (click)="confirmDelete(cat)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card>
+    }
+  </div>
+}
