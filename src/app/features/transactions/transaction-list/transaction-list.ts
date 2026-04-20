@@ -1,13 +1,8 @@
-import { Component, inject, OnInit, signal, Inject } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import {
-  MatDialog,
-  MatDialogModule,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
@@ -17,32 +12,8 @@ import { TransactionService } from '../../../services/transaction';
 import { AuthService } from '../../../services/auth';
 import { Transaction } from '../../../models/transaction.model';
 import { TransactionFormComponent } from '../transaction-form/transaction-form';
-// Local confirm dialog component (original external import was not exported from the module)
-@Component({
-  selector: 'app-confirm-dialog',
-  standalone: true,
-  imports: [MatDialogModule],
-  template: `
-    <h2 mat-dialog-title>Confirm</h2>
-    <mat-dialog-content>{{ data?.message }}</mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-button color="primary" (click)="onConfirm()">OK</button>
-    </mat-dialog-actions>
-  `,
-})
-export class ConfirmDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {}
-  onConfirm() {
-    this.dialogRef.close(true);
-  }
-  onCancel() {
-    this.dialogRef.close(false);
-  }
-}
+import { TransactionFilter, FilterCriteria } from '../transaction-filter/transaction-filter';
+import { ConfirmDialogComponent } from '../../../components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-transaction-list',
@@ -57,6 +28,7 @@ export class ConfirmDialogComponent {
     MatTooltipModule,
     CurrencyPipe,
     DatePipe,
+    TransactionFilter,
   ],
   templateUrl: './transaction-list.html',
   styleUrl: './transaction-list.css',
@@ -68,6 +40,49 @@ export class TransactionList implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   transactions = signal<Transaction[]>([]);
+  activeFilters = signal<FilterCriteria>({
+    search: '',
+    category: '',
+    type: '',
+    dateFrom: null,
+    dateTo: null,
+    amountMin: null,
+    amountMax: null,
+  });
+
+  // Computed signal — auto-updates whenever transactions or filters change
+  filteredTransactions = computed(() => {
+    const filters = this.activeFilters();
+    return this.transactions().filter((t) => {
+      const date = t.date instanceof Date ? t.date : (t.date as any).toDate();
+
+      // Search filter (notes)
+      if (filters.search && !t.notes.toLowerCase().includes(filters.search.toLowerCase())) {
+        return false;
+      }
+
+      // Category filter
+      if (filters.category && t.category !== filters.category) return false;
+
+      // Type filter
+      if (filters.type && t.type !== filters.type) return false;
+
+      // Date from
+      if (filters.dateFrom && date < filters.dateFrom) return false;
+
+      // Date to
+      if (filters.dateTo && date > filters.dateTo) return false;
+
+      // Amount min
+      if (filters.amountMin !== null && t.amount < filters.amountMin) return false;
+
+      // Amount max
+      if (filters.amountMax !== null && t.amount > filters.amountMax) return false;
+
+      return true;
+    });
+  });
+
   displayedColumns = ['date', 'category', 'notes', 'type', 'amount', 'actions'];
 
   ngOnInit() {
@@ -77,6 +92,10 @@ export class TransactionList implements OnInit {
         this.transactions.set(data);
       });
     }
+  }
+
+  onFilterChanged(filters: FilterCriteria) {
+    this.activeFilters.set(filters);
   }
 
   openAddDialog() {

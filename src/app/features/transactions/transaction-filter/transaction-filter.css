@@ -1,0 +1,38 @@
+.filter-card {
+  margin-bottom: 16px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    min-width: 160px;
+  }
+}
+
+.search-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.advanced-row {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f44336;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  margin-left: 4px;
+}

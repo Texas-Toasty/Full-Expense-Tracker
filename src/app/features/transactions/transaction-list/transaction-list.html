@@ -5,15 +5,29 @@
   </button>
 </div>
 
+<!-- Filter Panel -->
+<app-transaction-filter (filterChanged)="onFilterChanged($any($event))"></app-transaction-filter>
+
+<!-- Results count -->
+<p class="results-count">
+  Showing {{ filteredTransactions().length }} of {{ transactions().length }} transactions
+</p>
+
 <mat-card>
   <mat-card-content>
-    @if (transactions().length === 0) {
+    @if (filteredTransactions().length === 0) {
       <div class="empty-state">
         <mat-icon>receipt_long</mat-icon>
-        <p>No transactions yet. Add your first one!</p>
+        <p>
+          {{
+            transactions().length === 0
+              ? 'No transactions yet. Add your first one!'
+              : 'No transactions match your filters.'
+          }}
+        </p>
       </div>
     } @else {
-      <table mat-table [dataSource]="transactions()" class="full-width">
+      <table mat-table [dataSource]="filteredTransactions()" class="full-width">
         <!-- Date -->
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef>Date</th>
@@ -39,7 +53,7 @@
           <th mat-header-cell *matHeaderCellDef>Type</th>
           <td mat-cell *matCellDef="let t">
             <mat-chip [color]="t.type === 'income' ? 'primary' : 'warn'" highlighted>
-              {{ t.type ? (t.type.charAt(0).toUpperCase() + t.type.slice(1)) : '' }}
+              {{ t.type ? t.type.charAt(0).toUpperCase() + t.type.slice(1) : '' }}
             </mat-chip>
           </td>
         </ng-container>

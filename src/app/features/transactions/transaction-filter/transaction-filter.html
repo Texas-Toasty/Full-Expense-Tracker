@@ -1,1 +1,91 @@
-<p>transaction-filter works!</p>
+<mat-card class="filter-card">
+  <mat-card-content>
+    <form [formGroup]="form">
+      <!-- Top Row: Search + Type + Category -->
+      <div class="filter-row">
+        <!-- Search -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search notes...</mat-label>
+          <input matInput formControlName="search" />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Type -->
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option value="">All</mat-option>
+            <mat-option value="income">Income</mat-option>
+            <mat-option value="expense">Expense</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Category -->
+        <mat-form-field appearance="outline">
+          <mat-label>Category</mat-label>
+          <mat-select formControlName="category">
+            <mat-option value="">All Categories</mat-option>
+            @for (cat of categories; track cat.name) {
+              <mat-option [value]="cat.name">
+                <mat-icon [style.color]="cat.color">{{ cat.icon }}</mat-icon>
+                {{ cat.name }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Toggle Advanced -->
+        <button mat-stroked-button type="button" (click)="showAdvanced = !showAdvanced">
+          <mat-icon>tune</mat-icon>
+          Advanced
+          @if (activeFilterCount > 0) {
+            <span class="filter-badge">{{ activeFilterCount }}</span>
+          }
+        </button>
+
+        <!-- Clear -->
+        @if (activeFilterCount > 0) {
+          <button
+            mat-icon-button
+            type="button"
+            matTooltip="Clear all filters"
+            (click)="clearFilters()"
+          >
+            <mat-icon>clear</mat-icon>
+          </button>
+        }
+      </div>
+
+      <!-- Advanced Row: Date + Amount -->
+      @if (showAdvanced) {
+        <div class="filter-row advanced-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Date From</mat-label>
+            <input matInput [matDatepicker]="fromPicker" formControlName="dateFrom" />
+            <mat-datepicker-toggle matIconSuffix [for]="fromPicker"> </mat-datepicker-toggle>
+            <mat-datepicker #fromPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Date To</mat-label>
+            <input matInput [matDatepicker]="toPicker" formControlName="dateTo" />
+            <mat-datepicker-toggle matIconSuffix [for]="toPicker"> </mat-datepicker-toggle>
+            <mat-datepicker #toPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Min Amount</mat-label>
+            <input matInput formControlName="amountMin" type="number" placeholder="0" />
+            <span matTextPrefix>$&nbsp;</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Max Amount</mat-label>
+            <input matInput formControlName="amountMax" type="number" placeholder="0" />
+            <span matTextPrefix>$&nbsp;</span>
+          </mat-form-field>
+        </div>
+      }
+    </form>
+  </mat-card-content>
+</mat-card>

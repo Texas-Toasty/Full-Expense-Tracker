@@ -1,0 +1,133 @@
+.month-select {
+  width: 160px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px !important;
+  }
+
+  &.income .summary-icon {
+    background: #e8f5e9;
+    color: #388e3c;
+  }
+  &.expense .summary-icon {
+    background: #ffebee;
+    color: #d32f2f;
+  }
+  &.positive .summary-icon {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+  &.negative .summary-icon {
+    background: #ffebee;
+    color: #d32f2f;
+  }
+}
+
+.summary-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.summary-info {
+  display: flex;
+  flex-direction: column;
+
+  .label {
+    font-size: 13px;
+    color: #757575;
+  }
+  .amount {
+    font-size: 24px;
+    font-weight: 700;
+  }
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-container {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #bdbdbd;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+  }
+}
+
+.budget-card {
+  margin-bottom: 24px;
+}
+
+.budget-row {
+  margin-bottom: 20px;
+}
+
+.budget-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.budget-amounts {
+  color: #757575;
+  font-weight: 400;
+}
+
+.budget-warning {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #f57c00;
+  margin-top: 4px;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}

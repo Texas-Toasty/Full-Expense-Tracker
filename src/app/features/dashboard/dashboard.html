@@ -1,1 +1,113 @@
-<p>dashboard works!</p>
+<div class="page-header">
+  <h1>Dashboard</h1>
+
+  <!-- Month Selector -->
+  <mat-select [(ngModel)]="selectedMonth" (ngModelChange)="onMonthChange()" class="month-select">
+    @for (month of months; track $index) {
+      <mat-option [value]="$index">{{ month }}</mat-option>
+    }
+  </mat-select>
+</div>
+
+<!-- Summary Cards -->
+<div class="card-grid">
+  <mat-card class="summary-card income">
+    <mat-card-content>
+      <div class="summary-icon">
+        <mat-icon>arrow_downward</mat-icon>
+      </div>
+      <div class="summary-info">
+        <span class="label">Total Income</span>
+        <span class="amount">{{ totalIncome() | currency }}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="summary-card expense">
+    <mat-card-content>
+      <div class="summary-icon">
+        <mat-icon>arrow_upward</mat-icon>
+      </div>
+      <div class="summary-info">
+        <span class="label">Total Expenses</span>
+        <span class="amount">{{ totalExpenses() | currency }}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card
+    class="summary-card"
+    [class.positive]="netBalance() >= 0"
+    [class.negative]="netBalance() < 0"
+  >
+    <mat-card-content>
+      <div class="summary-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="summary-info">
+        <span class="label">Net Balance</span>
+        <span class="amount">{{ netBalance() | currency }}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Charts Row -->
+<div class="charts-grid">
+  <!-- Pie Chart -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Spending by Category</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="chart-container">
+      @if (pieChartData().labels?.length === 0) {
+        <div class="empty-chart">
+          <mat-icon>pie_chart</mat-icon>
+          <p>No expense data for this month</p>
+        </div>
+      } @else {
+        <canvas baseChart [data]="pieChartData()" [options]="pieChartOptions" type="pie"> </canvas>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Bar Chart -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Income vs Expenses (6 Months)</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="chart-container">
+      <canvas baseChart [data]="barChartData()" [options]="barChartOptions" type="bar"> </canvas>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Budget vs Actual -->
+@if (budgets().length > 0) {
+  <mat-card class="budget-card">
+    <mat-card-header>
+      <mat-card-title>Budget vs Actual</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @for (budget of budgets(); track budget.id) {
+        <div class="budget-row">
+          <div class="budget-label">
+            <span>{{ budget.category }}</span>
+            <span class="budget-amounts">
+              {{ getSpentAmount(budget) | currency }} /
+              {{ budget.amount | currency }}
+            </span>
+          </div>
+          <mat-progress-bar [value]="getBudgetProgress(budget)" [color]="getProgressColor(budget)">
+          </mat-progress-bar>
+          @if (getBudgetProgress(budget) >= 80) {
+            <span class="budget-warning">
+              <mat-icon>warning</mat-icon>
+              {{ getBudgetProgress(budget) >= 100 ? 'Budget exceeded!' : 'Nearing limit' }}
+            </span>
+          }
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+}

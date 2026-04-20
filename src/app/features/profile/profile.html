@@ -1,1 +1,190 @@
-<p>profile works!</p>
+<div class="page-header">
+  <h1>My Profile</h1>
+  <button mat-stroked-button color="warn" (click)="confirmLogout()">
+    <mat-icon>logout</mat-icon>
+    Sign Out
+  </button>
+</div>
+
+<div class="profile-grid">
+  <!-- Left Column -->
+  <div class="left-column">
+    <!-- Avatar + Info Card -->
+    <mat-card class="avatar-card">
+      <mat-card-content>
+        <div class="avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <h2>{{ authService.currentUser()?.displayName }}</h2>
+        <p class="email">{{ authService.currentUser()?.email }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Stats Card -->
+    <mat-card class="stats-card">
+      <mat-card-header>
+        <mat-card-title>Account Summary</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-row">
+          <span class="stat-label">
+            <mat-icon>receipt_long</mat-icon>
+            Total Transactions
+          </span>
+          <span class="stat-value">{{ totalTransactions }}</span>
+        </div>
+        <mat-divider></mat-divider>
+
+        <div class="stat-row">
+          <span class="stat-label">
+            <mat-icon class="income-icon">arrow_downward</mat-icon>
+            Total Income
+          </span>
+          <span class="stat-value income">{{ totalIncome | currency }}</span>
+        </div>
+        <mat-divider></mat-divider>
+
+        <div class="stat-row">
+          <span class="stat-label">
+            <mat-icon class="expense-icon">arrow_upward</mat-icon>
+            Total Expenses
+          </span>
+          <span class="stat-value expense">{{ totalExpenses | currency }}</span>
+        </div>
+        <mat-divider></mat-divider>
+
+        <div class="stat-row">
+          <span class="stat-label">
+            <mat-icon>savings</mat-icon>
+            Net Savings
+          </span>
+          <span
+            class="stat-value"
+            [class.income]="netSavings >= 0"
+            [class.expense]="netSavings < 0"
+          >
+            {{ netSavings | currency }}
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Right Column -->
+  <div class="right-column">
+    <!-- Edit Profile Card -->
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>edit</mat-icon>
+          Edit Profile
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Display Name</mat-label>
+            <input matInput formControlName="displayName" />
+            <mat-icon matSuffix>person</mat-icon>
+            @if (profileForm.get('displayName')?.hasError('required')) {
+              <mat-error>Name is required</mat-error>
+            }
+            @if (profileForm.get('displayName')?.hasError('minlength')) {
+              <mat-error>Name must be at least 2 characters</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Monthly Budget Goal</mat-label>
+            <input matInput formControlName="monthlyBudgetGoal" type="number" />
+            <span matTextPrefix>$&nbsp;</span>
+            <mat-icon matSuffix>savings</mat-icon>
+            @if (profileForm.get('monthlyBudgetGoal')?.hasError('min')) {
+              <mat-error>Budget goal must be a positive number</mat-error>
+            }
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="profileForm.invalid || loading()"
+          >
+            <mat-icon>save</mat-icon>
+            {{ loading() ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Change Password Card -->
+    <mat-card class="password-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>lock</mat-icon>
+          Change Password
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Current Password</mat-label>
+            <input
+              matInput
+              formControlName="currentPassword"
+              [type]="hideCurrentPassword ? 'password' : 'text'"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hideCurrentPassword = !hideCurrentPassword"
+            >
+              <mat-icon>
+                {{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+            @if (passwordForm.get('currentPassword')?.hasError('required')) {
+              <mat-error>Current password is required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>New Password</mat-label>
+            <input
+              matInput
+              formControlName="newPassword"
+              [type]="hideNewPassword ? 'password' : 'text'"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hideNewPassword = !hideNewPassword"
+            >
+              <mat-icon>
+                {{ hideNewPassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+            @if (passwordForm.get('newPassword')?.hasError('required')) {
+              <mat-error>New password is required</mat-error>
+            }
+            @if (passwordForm.get('newPassword')?.hasError('minlength')) {
+              <mat-error>Password must be at least 6 characters</mat-error>
+            }
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="accent"
+            type="submit"
+            [disabled]="passwordForm.invalid || passwordLoading()"
+          >
+            <mat-icon>lock_reset</mat-icon>
+            {{ passwordLoading() ? 'Updating...' : 'Change Password' }}
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
