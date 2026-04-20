@@ -8,6 +8,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { TransactionService } from '../../../services/transaction';
 import { CategoryService } from '../../../services/category';
 import { AuthService } from '../../../services/auth';
@@ -22,6 +23,7 @@ import { Category } from '../../../models/category.model';
     MatDialogModule,
     MatButtonModule,
     MatInputModule,
+    MatFormFieldModule,
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,

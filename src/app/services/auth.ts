@@ -20,17 +20,27 @@ export class AuthService {
   user$ = user(this.auth);
 
   async register(email: string, password: string, displayName: string) {
-    const cred = await createUserWithEmailAndPassword(this.auth, email, password);
-    const profile: UserProfile = {
-      uid: cred.user.uid,
-      email,
-      displayName,
-      monthlyBudgetGoal: 0,
-      createdAt: new Date(),
-    };
-    await setDoc(doc(this.firestore, 'users', cred.user.uid), profile);
-    this.currentUser.set(profile);
-    this.router.navigate(['/dashboard']);
+    try {
+      const cred = await createUserWithEmailAndPassword(this.auth, email, password);
+      console.log('Firebase user created:', cred.user.uid);
+
+      const profile: UserProfile = {
+        uid: cred.user.uid,
+        email,
+        displayName,
+        monthlyBudgetGoal: 0,
+        createdAt: new Date(),
+      };
+
+      await setDoc(doc(this.firestore, 'users', cred.user.uid), profile);
+      console.log('Firestore profile saved!');
+
+      this.currentUser.set(profile);
+      this.router.navigate(['/dashboard']);
+    } catch (e: any) {
+      console.error('Registration error:', e.code, e.message);
+      throw e;
+    }
   }
 
   async login(email: string, password: string) {
