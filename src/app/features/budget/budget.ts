@@ -134,40 +134,51 @@ export class BudgetComponent implements OnInit {
   }
 
   async onSubmit() {
-    if (this.form.invalid) return;
-    const uid = this.authService.currentUser()?.uid;
-    if (!uid) return;
-
-    // Check if budget already exists for this category/month/year
-    const exists = this.filteredBudgets.find(
-      b => b.category === this.form.value.category
-    );
-    if (exists) {
-      this.snackBar.open(
-        'A budget for this category already exists this month. Delete it first to reset.',
-        'OK', { duration: 4000 }
-      );
-      return;
-    }
-
-    this.loading = true;
-    try {
-      await this.budgetService.addBudget({
-        uid,
-        category: this.form.value.category!,
-        amount:   this.form.value.amount!,
-        month:    this.selectedMonth,
-        year:     this.selectedYear
-      });
-      this.form.reset();
-      this.showForm = false;
-      this.snackBar.open('Budget set!', 'OK', { duration: 3000 });
-    } catch (e) {
-      console.error(e);
-    } finally {
-      this.loading = false;
-    }
+  console.log('Form valid:', this.form.valid);
+  console.log('Form values:', this.form.value);
+  
+  if (this.form.invalid) return;
+  
+  const uid = this.authService.currentUser()?.uid;
+  console.log('UID:', uid);
+  if (!uid) {
+    console.log('No UID found - user not loaded');
+    return;
   }
+
+  const exists = this.filteredBudgets.find(
+    b => b.category === this.form.value.category
+  );
+  console.log('Existing budget found:', exists);
+  if (exists) {
+    this.snackBar.open(
+      'A budget for this category already exists this month. Delete it first to reset.',
+      'OK', { duration: 4000 }
+    );
+    return;
+  }
+
+  this.loading = true;
+  try {
+    const budgetData = {
+      uid,
+      category: this.form.value.category!,
+      amount:   this.form.value.amount!,
+      month:    this.selectedMonth,
+      year:     this.selectedYear
+    };
+    console.log('Saving budget:', budgetData);
+    await this.budgetService.addBudget(budgetData);
+    console.log('Budget saved successfully!');
+    this.form.reset();
+    this.showForm = false;
+    this.snackBar.open('Budget set!', 'OK', { duration: 3000 });
+  } catch (e) {
+    console.error('Budget save error:', e);
+  } finally {
+    this.loading = false;
+  }
+}
 
   confirmDelete(budget: Budget) {
     const ref = this.dialog.open(ConfirmDialogComponent, {
